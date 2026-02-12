@@ -35,11 +35,15 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
 <link rel='stylesheet' id='forms-css' href='https://login.wordpress.org/wp-admin/css/forms.min.css?ver=7.0-alpha-61616' media='all' />
 <link rel='stylesheet' id='l10n-css' href='https://login.wordpress.org/wp-admin/css/l10n.min.css?ver=7.0-alpha-61616' media='all' />
 <link rel='stylesheet' id='login-css' href='https://login.wordpress.org/wp-admin/css/login.min.css?ver=7.0-alpha-61616' media='all' />
-<link rel='stylesheet' id='wporg-login-css' href='https://login.wordpress.org/wp-content/themes/pub/wporg-login/stylesheets/login.css?ver=1748265137' media='all' />
+<link rel='stylesheet' id='wporg-login-css' href='https://login.wordpress.org/wp-content/themes/pub/wporg-login/stylesheets/login.css?ver=1748340218' media='all' />
+<script id="wporg-registration-js-extra">
+var wporg_registration = {"rest_url":"https://login.wordpress.org/wp-json/wporg/v1"};
+</script>
+<script src='https://login.wordpress.org/wp-admin/load-scripts.php?c=0&amp;load%5Bchunk_0%5D=jquery-core,jquery-migrate&amp;ver=7.0-alpha-61616'></script>
 <script id="recaptcha-api-v3-js" src="https://www.google.com/recaptcha/api.js?onload=reCaptcha_v3_init&#038;render=6LckXrgUAAAAANrzcMN7iy_WxvmMcseaaRW-YFts&#038;ver=3"></script>
 <script id="recaptcha-api-v3-js-after">
 function reCaptcha_v3_init() {
-			grecaptcha.execute("6LckXrgUAAAAANrzcMN7iy_WxvmMcseaaRW-YFts", {action: "login" }
+			grecaptcha.execute("6LckXrgUAAAAANrzcMN7iy_WxvmMcseaaRW-YFts", {action: "register" }
 			).then( function( token ) {
 				// Add the token to the "primary" form
 				var input = document.createElement( "input" ),
@@ -65,8 +69,30 @@ function reCaptcha_v3_init() {
 		}
 //# sourceURL=recaptcha-api-v3-js-after
 </script>
+<script id="recaptcha-api-js" src="https://www.google.com/recaptcha/api.js?ver=2"></script>
+<script id="recaptcha-api-js-after">
+function onSubmit(token) {
+			var form = document.querySelector( "#registerform, form:not(#language-switcher)" );
+
+			if ( ! form ) {
+				return;
+			}
+
+			// This is used for the interaction with the invisible v3 recaptcha. 
+			if ( form.dataset.submitReady ) {
+				form.submit();
+			} else {
+				// Still waiting on reCaptcha V3, disable the submit button.
+				form.dataset.submitReady = true;
+				document.getElementById("wp-submit").disabled = true;
+			}
+		}
+//# sourceURL=recaptcha-api-js-after
+</script>
+<script id="wporg-registration-js" src="https://login.wordpress.org/wp-content/themes/pub/wporg-login/js/registration.js?ver=1748340218"></script>
 <link rel="https://api.w.org/" href="https://login.wordpress.org/wp-json/" /><meta name="generator" content="WordPress 7.0-alpha-61616" />
-<link rel="canonical" href="https://login.wordpress.org/">
+<meta name="robots" content="noindex,follow" />
+<link rel="canonical" href="https://login.wordpress.org/register">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin> <!-- Stream WordPress user activity plugin v4.1.1 -->
 	<style>img#wpstats{display:none}</style>
 		<link rel="icon" href="https://s.w.org/favicon.ico?2" sizes="32x32" />
@@ -74,69 +100,54 @@ function reCaptcha_v3_init() {
 <link rel="apple-touch-icon" href="https://s.w.org/images/wmark.png" />
 <meta name="msapplication-TileImage" content="https://s.w.org/images/wmark.png" />
 </head>
-<body class="wp-theme-pubwporg-login wp-core-ui login no-js route-root">
+<body class="wp-theme-pubwporg-login wp-core-ui login no-js route-register">
 <script type="text/javascript">document.body.className = document.body.className.replace('no-js','js');</script>
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-P24PF4B" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 	
 <div id="login">
 		<h1><a href="https://wordpress.org/" tabindex="-1">Powered by WordPress</a></h1>
 
-<form name="loginform" id="loginform" action="https://login.wordpress.org/wp-login.php" method="post">
-	<p class="intro">Log in to your WordPress.org account to contribute to WordPress, get help in the support forum, or rate and review themes and plugins.</p>
+
+<p class="intro">Create a WordPress.org account to start contributing to WordPress, get help in the support forums, or rate and review themes and plugins.</p>
+
+<form name="registerform" id="registerform" action="/register" method="post">
+
 	<p class="login-username">
-		<label for="user_login">Username or Email Address</label>
-		<input type="text" name="log" id="user_login" class="input" value="" size="20" />
-	</p>
-	<p class="login-password">
-		<label for="user_pass">Password</label>
-		<span class="wp-pwd" style="display:block;">
-			<input type="password" name="pwd" id="user_pass" class="input password-input" value="" size="20" />
-			<button type="button" id="wp-hide-pw" class="button button-secondary wp-hide-pw hide-if-no-js" aria-label="Show password">
-				<span class="dashicons dashicons-visibility" aria-hidden="true"></span>
-			</button>
-		</span>
+		<label for="user_login">Username</label>
+		<input type="text" name="user_login" id="user_login" class="input " value="" size="20" maxlength="60" data-pattern-after-blur="[0-9a-z]{0,60}" required />
+		<span class="small">Only lower case letters (a-z) and numbers (0-9) are allowed.</span>
 	</p>
 	
-		<p class="login-pineapple login-remember checkbox"><label><input name="pineapple" type="checkbox" id="pineapple" value="yes-it-is" /> Pineapple is delicious on pizza</label></p>
-		<p class="login-remember"><label><input name="rememberme" type="checkbox" id="rememberme" value="forever" /> Remember me</label></p>
-	<p class="login-submit">
-		<input type="submit" name="wp-submit" id="wp-submit" class="button button-primary" value="Log In" />
-		<input type="hidden" name="redirect_to" value="https://profiles.wordpress.org/" />
+	<p class="login-email">
+		<label for="user_email">Email</label>
+		<input type="email" name="user_email" id="user_email" class="input " value="" size="20" maxlength="100" data-pattern-after-blur=".+@.+\..+" required />
+		<span class="small">A link to set your password will be sent here.</span>
 	</p>
+		
+		<p class="login-pineapple checkbox"><label><input name="pineapple" type="checkbox" id="pineapple" value="yes-it-is" /> Pineapple is delicious on pizza</label></p>
+		<p class="login-tos checkbox ">
+		<label for="terms_of_service">
+			<input name="terms_of_service" type="checkbox" id="terms_of_service" value="1618205211"  required="required">
+			I have read and accept the <a href='https://wordpress.org/about/privacy/'>Privacy Policy</a>		</label>
+	</p>
+
+	<p class="login-mailinglist checkbox">
+		<label for="user_mailinglist">
+			<input name="user_mailinglist" type="checkbox" id="user_mailinglist" value="true" >
+			Subscribe to WordPress Announcements mailing list (a few messages a year)		</label>
+	</p>
+	
+	<p class="login-submit">
+		<input data-sitekey="6LehfRgUAAAAAJbxrvWRaQ_uFq2ZO7jRM3VLcbFr" data-callback='onSubmit' type="submit" name="wp-submit" id="wp-submit" class="g-recaptcha button button-primary button-large" value="Create Account" />
+	</p>
+
 </form>
 
+
 <p id="nav">
-	<a href="https://login.wordpress.org/lostpassword" title="Lost your password?">Lost your password?</a> &nbsp; • &nbsp;
-	<a href="https://login.wordpress.org/register" title="Create an account">Create an account</a>
+	<a href="/" title="Already have an account?">Already have an account?</a> &nbsp; • &nbsp;
+	<a href="https://wordpress.org/">WordPress.org</a>
 </p>
-
-<script type="text/javascript">
-setTimeout( function() {
-	try {
-		var d = document.getElementById( 'user_login' );
-		if ( d.value ) {
-			d = document.getElementById( 'user_pass' );
-		}
-		d.focus();
-		d.select();
-
-		var h = document.getElementById( 'wp-hide-pw' );
-		h.onclick = function() {
-			var p = document.getElementById( 'user_pass' );
-			if ( p.type === 'password' ) {
-				p.type = 'text';
-				h.ariaLabel = "Hide password";
-				h.children[0].className = 'dashicons dashicons-hidden';
-			} else {
-				p.type = 'password';
-				h.ariaLabel = "Show password";
-				h.children[0].className = 'dashicons dashicons-visibility';
-			}
-		}
-	} catch( e ){}
-}, 200 );
-</script>
-
 
 	</div>
 
@@ -163,7 +174,7 @@ setTimeout( function() {
 <div id="wporg-locale-switcher-container"></div><script data-wp-strategy="defer" defer id="wporg-time-view-script-js" src="https://login.wordpress.org/wp-content/mu-plugins/pub-sync/blocks/time/build/view.js?ver=385bfe9134bf98c52dda"></script>
 <script id="jetpack-stats-js-before">
 _stq = window._stq || [];
-_stq.push([ "view", {"v":"ext","blog":"124570481","post":"0","tz":"0","srv":"login.wordpress.org","arch_err":"/","j":"1:15.4"} ]);
+_stq.push([ "view", {"v":"ext","blog":"124570481","post":"0","tz":"0","srv":"login.wordpress.org","arch_err":"/register","j":"1:15.4"} ]);
 _stq.push([ "clickTrackerInit", "124570481", "0" ]);
 //# sourceURL=jetpack-stats-js-before
 </script>
